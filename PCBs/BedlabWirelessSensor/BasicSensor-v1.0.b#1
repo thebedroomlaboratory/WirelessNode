@@ -6,7 +6,7 @@
 <setting alwaysvectorfont="yes"/>
 <setting verticaltext="up"/>
 </settings>
-<grid distance="0.025" unitdist="inch" unit="inch" style="lines" multiple="1" display="yes" altdistance="0.025" altunitdist="inch" altunit="inch"/>
+<grid distance="0.0125" unitdist="inch" unit="inch" style="lines" multiple="1" display="yes" altdistance="0.025" altunitdist="inch" altunit="inch"/>
 <layers>
 <layer number="1" name="Top" color="4" fill="1" visible="no" active="yes"/>
 <layer number="16" name="Bottom" color="1" fill="1" visible="yes" active="yes"/>
@@ -126,14 +126,16 @@
 </layers>
 <board>
 <plain>
-<wire x1="0" y1="0" x2="36.5" y2="0" width="0" layer="20"/>
-<wire x1="36.5" y1="0" x2="36.5" y2="47.615" width="0" layer="20"/>
-<wire x1="36.5" y1="47.615" x2="0" y2="47.615" width="0" layer="20"/>
-<wire x1="0" y1="47.615" x2="0" y2="0" width="0" layer="20"/>
+<wire x1="0" y1="0" x2="41.58" y2="0" width="0" layer="20"/>
+<wire x1="41.58" y1="0" x2="41.58" y2="50.155" width="0" layer="20"/>
+<wire x1="41.58" y1="50.155" x2="0" y2="50.155" width="0" layer="20"/>
+<wire x1="0" y1="50.155" x2="0" y2="0" width="0" layer="20"/>
 <text x="35.56" y="41.5925" size="1.778" layer="16" rot="SMR270">thebedroomlaboratory.com</text>
 <text x="33.3375" y="22.225" size="1.27" layer="16" rot="SMR270">Bedlab (c) 2014</text>
 <text x="2.2225" y="41.5925" size="1.6764" layer="16" rot="SMR270">Sensor Board</text>
 <text x="2.2225" y="12.7" size="1.778" layer="16" rot="SMR270">v1.0</text>
+<dimension x1="0" y1="50.155" x2="36.195" y2="47.625" x3="18.0975" y3="47.625" textsize="1.778" layer="16" dtype="horizontal"/>
+<dimension x1="39.04" y1="0" x2="39.0525" y2="47.625" x3="39.37" y3="23.8125" textsize="1.778" layer="16" dtype="vertical"/>
 </plain>
 <libraries>
 <library name="SparkFun-Passives">

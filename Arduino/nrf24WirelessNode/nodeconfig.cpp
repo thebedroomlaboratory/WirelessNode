@@ -74,10 +74,17 @@ void nodeconfig_listen(void)
     }
     else if ( tolower(c) == 'b' )
     {
+      // Profile for Door Sensor 
       set_profile(1);
       set_address();
     }
     else if ( tolower(c) == 'c' )
+    {
+      // Profile for Basic Sensor 
+      set_profile(2);
+      set_address();
+    }
+    else if ( tolower(c) == 'd' )
     {
       // Profile for Power Strip
       *nextserialat = 0;
@@ -90,9 +97,8 @@ void nodeconfig_listen(void)
       if ( ! eeprom_info.isValid() )
 	printf_P(PSTR("Please assign an address\r\n"));
     }
-    else if ( c == 'd' )
+    else if ( c == 'e' )
     {
-      // Profile for Door Contact 
       set_address();
     }
   }
