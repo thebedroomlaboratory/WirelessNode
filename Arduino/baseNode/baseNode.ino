@@ -27,6 +27,12 @@ RF24Network network(radio);
 const uint16_t this_node = 00;
 
 uint16_t other_node = 01;
+int nodeType;
+int lightReading;
+int tempReading;
+int humReading;
+boolean lightStat;
+boolean reedReading;
 
 // Structure of our sensor readings payload
 struct SensorPayload_t
@@ -80,33 +86,54 @@ void loop(void)
     network.read(header,&payload,sizeof(payload));
     Serial.print("From: 0");
     Serial.print(header.from_node, OCT);
+    other_node = header.from_node;
     Serial.print(", Node Type: ");
     Serial.print(payload.nodeType);
+    nodeType = payload.nodeType;
     Serial.print(", Light level: ");
     Serial.print(payload.lightReading);
+    lightReading = payload.lightReading;
     Serial.print(", Temperature: ");
     Serial.print(payload.tempReading);
+    tempReading = payload.tempReading;
     Serial.print(", Humidity: ");
     Serial.print(payload.humReading);
+    humReading = payload.humReading;
+    Serial.print(", Door Open: ");
+    Serial.print(payload.reedReading);
+    reedReading = payload.reedReading;
     Serial.print(", Light is ");
     Serial.println(payload.lightStat ? "on" : "off");
+    lightStat = payload.lightStat;
+    
+    // Check for switching orders from Web
+    checkSwitches();
   }
+}
+
+void switchLight(boolean value){
+  LSwitchPayload_t payload = { value };
+  Serial.println("Sending...");
   
-  // Check for switching orders from Web
-  checkSwitches();
+  RF24NetworkHeader header(/*to node*/ other_node);
+  bool ok = network.write(header, &payload, sizeof(payload));
+  if (ok)
+      Serial.println("ok.");
+  else
+      Serial.println("failed.");
 }
 
 void checkSwitches(){
-  if (digitalRead(2)!=zone1Light){
-    zone1Light=digitalRead(2);
-    LSwitchPayload_t payload = { zone1Light };
-    Serial.println("Sending...");
-    
-    RF24NetworkHeader header(/*to node*/ other_node);
-    bool ok = network.write(header, &payload, sizeof(payload));
-    if (ok)
-        Serial.println("ok.");
-    else
-        Serial.println("failed.");
+  if (other_node == 1) {
+    if (digitalRead(2)!=zone1Light){
+      zone1Light=digitalRead(2);
+      switchLight(zone1Light);
+    }
+  }
+  else if (other_node == 2) {
+    if (digitalRead(3)!=zone2Light){
+      zone2Light=digitalRead(3);
+      switchLight(zone2Light);
+    }
   }
 }
