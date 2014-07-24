@@ -111,29 +111,31 @@ void loop(void)
   }
 }
 
-void switchLight(boolean value){
+boolean switchLight(boolean value){
   LSwitchPayload_t payload = { value };
   Serial.println("Sending...");
   
   RF24NetworkHeader header(/*to node*/ other_node);
   bool ok = network.write(header, &payload, sizeof(payload));
-  if (ok)
+  if (ok){
       Serial.println("ok.");
-  else
+      return value;
+  }
+  else{
       Serial.println("failed.");
+      return !value;
+  }
 }
 
 void checkSwitches(){
   if (other_node == 1) {
     if (digitalRead(2)!=zone1Light){
-      zone1Light=digitalRead(2);
-      switchLight(zone1Light);
+      zone1Light=switchLight(digitalRead(2));
     }
   }
   else if (other_node == 2) {
     if (digitalRead(3)!=zone2Light){
-      zone2Light=digitalRead(3);
-      switchLight(zone2Light);
+      zone2Light=switchLight(digitalRead(3));
     }
   }
 }

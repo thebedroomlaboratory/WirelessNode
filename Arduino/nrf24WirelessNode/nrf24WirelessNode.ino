@@ -16,20 +16,19 @@
 #include <RF24Network.h>
 #include <RF24.h>
 #include <SPI.h>
-#include <DHT.h>
+#include "dht11.h"
 #include "nodeconfig.h"
 #include "printf.h"
 
 // Configure pin numbering
 int lightSensorPin = 0; 
-#define DHTPIN 2
+#define DHT11PIN 2
 int ledPin = 3;
 int reedPin = 4;
 RF24 radio(9, 10);
 
 // Initialize our temperature sensor
-#define DHTTYPE DHT11   // DHT 11 - Sensor model
-DHT dht(DHTPIN, DHTTYPE);
+dht11 DHT11;
 
 // Network uses that radio
 RF24Network network(radio);
@@ -76,7 +75,7 @@ void setup(void)
     SPI.begin();
     radio.begin();
     network.begin(/*channel*/ 100, /*node address*/ this_node.address);
-    dht.begin();
+    pinMode(ledPin, OUTPUT);
 }
 
 void loop(void)
@@ -144,14 +143,31 @@ void sensorReading(int nodeType)
     // getting the voltage reading from the LDR
     int lightReading = analogRead(lightSensorPin);
     // getting the temperature and humidity levels from the DHT11
-    int tempReading = (int)(dht.readTemperature()+0.5);
-    int humReading = (int)(dht.readHumidity()+0.5);
+    int chk = DHT11.read(DHT11PIN);
+//    Serial.print("Read sensor: ");
+//    switch (chk)
+//    {
+//      case DHTLIB_OK: 
+//  		Serial.println("OK"); 
+//  		break;
+//      case DHTLIB_ERROR_CHECKSUM: 
+//  		Serial.println("Checksum error"); 
+//  		break;
+//      case DHTLIB_ERROR_TIMEOUT: 
+//  		Serial.println("Time out error"); 
+//  		break;
+//      default: 
+//  		Serial.println("Unknown error"); 
+//  		break;
+//    }
+    int tempReading = DHT11.temperature;
+    int humReading = DHT11.humidity;
     boolean reedReading = false;
     if (nodeType == 1){
       reedReading = digitalRead(reedPin);
     }
     SensorPayload_t payload = { nodeType, lightReading, tempReading, humReading, lightStat, reedReading };
-    printf_P(PSTR("Sending...\n\r"));
+    printf_P(PSTR("Sending...%d %d\n\r"),tempReading, humReading);
     
     RF24NetworkHeader header(/*to node*/ other_node);
     bool ok = network.write(header, &payload, sizeof(payload));
