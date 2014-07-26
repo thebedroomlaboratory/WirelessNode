@@ -10,6 +10,8 @@
 #include <RF24Network.h>
 #include <RF24.h>
 #include <SPI.h>
+#include "EmonLib.h"             // Include Emon Library
+EnergyMonitor emon1;             // Create an instance
 
 // Configure pin numbering
 RF24 radio(9, 10);
@@ -57,19 +59,27 @@ const int switch0 = 5;
 const int switch1 = 6;
 const int switch2 = 7;
 const int switch3 = 8;
+//
+const int meter0 = A4;
+const double Power = 230.0;
 
 // Variables will change
 int switches[] = {0, 0, 0, 0};
 int prevSwitches[] = {0, 0, 0, 0};
 int relays[] = {0, 0, 0, 0};
+double Irms = 0.0;
 
 void setup() {
+  // Meter Setup
+  emon1.voltage(2, 234.26, 1.7);  // Voltage: input pin, calibration, phase_shift
+  emon1.current(meter0, 21.3);       // Current: input pin, calibration.  
+  //
   // NRF Setup
   Serial.println("RF24Network/examples/helloworld_rx/");
   SPI.begin();
   radio.begin();
   network.begin(/*channel*/ 100, /*node address*/ this_node);
-  
+  //
   // initialize the Relay pin as an output:
   pinMode(relay0, OUTPUT);
   pinMode(relay1, OUTPUT);
@@ -140,6 +150,18 @@ void switchRelay(int no){
   }  
 }
 
+void readMeter(){
+  Irms = emon1.calcIrms(1480);  // Calculate Irms only
+}
+
+void writeMeter(){
+  Serial.print("Apparent Power:: ");
+  Serial.print(Irms*Power);	       // Apparent power
+  Serial.print("\tIrms:: ");
+  Serial.println(Irms);		       // Irms
+ 
+}
+
 void loop(){
   // Don't poll constanly, wait a while before polling pins.
   //delay(DELAY); 
@@ -190,6 +212,7 @@ void readNRF()
 void sensorMgr()
 {
   readNRF();
+  readMeter();
   // If it's time to send a message, send it!
   unsigned long now = millis();
   if ( now - last_sent >= interval  )
@@ -202,7 +225,7 @@ void sensorMgr()
     payload.field2=digitalRead(relay1);
     payload.field3=digitalRead(relay2);
     payload.field4=digitalRead(relay3);
-    payload.field7=0.4;
+    payload.field7=Irms*Power;
     Serial.print(payload.field1);
     Serial.print("\r");
     Serial.print(payload.field2);
@@ -211,7 +234,10 @@ void sensorMgr()
     Serial.print("\r");
     Serial.print(payload.field4);
     Serial.print("\r");    
+    Serial.print(payload.field7);
+    Serial.print("\r");    
     Serial.println("Sending...");
+    //writeMeter();
     
     RF24NetworkHeader header(/*to node*/ other_node);
     bool ok = network.write(header, &payload, sizeof(payload));
