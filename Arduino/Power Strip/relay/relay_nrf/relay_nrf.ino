@@ -27,10 +27,13 @@ unsigned long last_sent;
 struct payload_out_t
 {
   int nodeType = 0;
-  int relay0 = 0;
-  int relay1 = 0;
-  int relay2 = 0;
-  int relay3 = 0;
+  int field1 = 0;//relay0
+  int field2 = 0;//relay1
+  int field3 = 0;//relay2
+  int field4 = 0;//relay3
+  boolean field5;//not_used
+  boolean field6;//not_used
+  float field7;//power
 };
 // Structure of our light switch payload
 struct payload_in_t
@@ -195,11 +198,20 @@ void sensorMgr()
     last_sent = now;       
     payload_out_t payload;
     payload.nodeType=this_node;
-    payload.relay0=relay0;
-    payload.relay1=relay1;
-    payload.relay2=relay2;
-    payload.relay3=relay3;
-    Serial.println("Sending...\n\r");
+    payload.field1=digitalRead(relay0);
+    payload.field2=digitalRead(relay1);
+    payload.field3=digitalRead(relay2);
+    payload.field4=digitalRead(relay3);
+    payload.field7=0.4;
+    Serial.print(payload.field1);
+    Serial.print("\r");
+    Serial.print(payload.field2);
+    Serial.print("\r");
+    Serial.print(payload.field3);
+    Serial.print("\r");
+    Serial.print(payload.field4);
+    Serial.print("\r");    
+    Serial.println("Sending...");
     
     RF24NetworkHeader header(/*to node*/ other_node);
     bool ok = network.write(header, &payload, sizeof(payload));
