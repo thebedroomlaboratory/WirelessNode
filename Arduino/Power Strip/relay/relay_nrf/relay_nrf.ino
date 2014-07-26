@@ -201,11 +201,18 @@ void readNRF()
     RF24NetworkHeader header;
     payload_in_t payload;
     network.read(header,&payload,sizeof(payload));
-    Serial.println("Print readings");
+    digitalWrite(relay0, payload.switch0);
+    digitalWrite(relay1, payload.switch1);
+    digitalWrite(relay2, payload.switch2);
+    digitalWrite(relay3, payload.switch3);
     Serial.print(payload.switch0);
+    Serial.print("\t");
     Serial.print(payload.switch1);
+    Serial.print("\t");
     Serial.print(payload.switch2);
+    Serial.print("\t");
     Serial.print(payload.switch3);
+    Serial.println("Print readings");
   }
 }
 
