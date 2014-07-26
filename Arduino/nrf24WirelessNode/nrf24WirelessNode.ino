@@ -53,8 +53,10 @@ struct SensorPayload_t
   int lightReading;
   int tempReading;
   int humReading;
+  int field4; // Nothing;relay3
   boolean lightStat;
   boolean reedReading;
+  float field7; // Nothing;Power
 };
 
 // Structure of our light switch payload
@@ -166,7 +168,7 @@ void sensorReading(int nodeType)
     if (nodeType == 1){
       reedReading = digitalRead(reedPin);
     }
-    SensorPayload_t payload = { nodeType, lightReading, tempReading, humReading, lightStat, reedReading };
+    SensorPayload_t payload = { nodeType, lightReading, tempReading, humReading, 0, lightStat, reedReading, 0.0 };
     printf_P(PSTR("Sending...%d %d\n\r"),tempReading, humReading);
     
     RF24NetworkHeader header(/*to node*/ other_node);
