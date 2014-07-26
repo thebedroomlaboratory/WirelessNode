@@ -16,7 +16,7 @@ RF24 radio(9, 10);
 // Network uses that radio
 RF24Network network(radio);
 // Address of the this node
-const uint16_t this_node = 03;
+const uint16_t this_node = 04;
 // Address of the base node
 const uint16_t other_node = 00;
 // How often to send 'hello world to the other unit
